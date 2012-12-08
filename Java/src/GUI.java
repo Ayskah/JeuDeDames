@@ -11,7 +11,8 @@ import javax.swing.border.TitledBorder;
 @SuppressWarnings("serial")
 public class GUI extends JFrame implements ActionListener{
 	/*LOOK*/
-	Dimension dimBaseWindow = new Dimension(510, 800);
+	static GUI gui;
+	Dimension dimBaseWindow = new Dimension(500, 800);
 	LineBorder lineBorder = new LineBorder(Color.BLACK);
 	TitledBorder titledBorderHisto = new TitledBorder("Historique de la partie");
 	/*PANS+COMP*/
@@ -32,6 +33,10 @@ public class GUI extends JFrame implements ActionListener{
 	/**
 	 * GUI
 	 */
+	public static GUI getInstance(){
+		return gui;
+	}
+	
 	public GUI() {
 		makeMe();
 		makeMenu();
@@ -55,8 +60,7 @@ public class GUI extends JFrame implements ActionListener{
 				/*NORTH*/
 					/*PLATEAU*/
 					Image imagePlateau = new ImageIcon("res/plat.png").getImage();
-					panPlat = new PanelJeu(imagePlateau);
-		
+					panPlat = new PanelJeu(imagePlateau, this);
 			/*SOUTH*/
 				/*HISTORIQUE*/
 				historique = new JTextArea(10, 30);
@@ -88,7 +92,6 @@ public class GUI extends JFrame implements ActionListener{
 			if ("Nimbus".equals(laf.getName())) {
 				try {
 					UIManager.setLookAndFeel(laf.getClassName());
-
 				} catch (Exception e) {
 					System.out.println("Erreur LNF - Default used");
 				}
@@ -102,8 +105,15 @@ public class GUI extends JFrame implements ActionListener{
 		if(e.getSource()==nouvellePartie)
 			Board.getInstance().getParser().createfilefromURL("http://localhost/JeuDames/?newGame=1");
 			Board.getInstance().getParser().browseNodes();
-			panPlat.repaint();
+			Board.getInstance().setVals();
 			this.repaint();
-	}	
+			panPlat.repaint();
+	}
+	/**
+	 * @param str
+	 */
+	public void writeAc(String str){
+		historique.append(str);
+	}
 }
 

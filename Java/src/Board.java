@@ -15,6 +15,7 @@ public class Board{
 	private Parser theParser;
 	private ArrayList<Integer> lstPwns;
 	private Integer[][] tabPwns;
+	int k;
 	/**
 	 * @return
 	 */
@@ -23,7 +24,7 @@ public class Board{
 			plat = new Board();		
 		}
 		return plat;
-	}	
+	}
 	public Board(){
 		System.out.println("Board");
 		ptsP = new ArrayList<Point>();
@@ -31,7 +32,8 @@ public class Board{
 		theParser=new Parser();
 		theParser.createfilefromURL("http://localhost/JeuDames/");
 		theParser.browseNodes();
-		tabPwns = new Integer[10][10];
+		tabPwns = new Integer[11][11];
+		k=1;
 	}	
 	/**
 	 * @return
@@ -148,7 +150,6 @@ public class Board{
 	public Parser getParser(){
 		return theParser;
 	}
-	
 	/**
 	 * @return Integer[10][10] Tab GB
 	 */
@@ -156,12 +157,10 @@ public class Board{
 		return tabPwns;
 	}
 	public void setVals(){
-		int k=0;
-		for(int i=1; i<=10;i++){
-			k++;
-			for(int j=1;j<=10;j++){
+		for(int i=1;i<=10;i++){
+			for(int j=0;j<10;j++){
+				tabPwns[i][j]= theParser.getVal(k);
 				k++;
-				tabPwns[i][j]=theParser.getVal(k);
 			}
 		}
 	}

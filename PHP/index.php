@@ -1,9 +1,30 @@
 <?php
-	$board=initaBoard();
+	if(!isset($_GET['newGame'])||!isset($_GET['move'])){
+		$board=initaBoard();
+	}
 	if(isset($_GET['newGame'])){
 		$board=initParty();
 	}
+	if(isset($_GET['move'])){
+		$board=load("board.xml");
+		$move = $_GET['move'];
+		list($from, $dest)= explode("-", $move);
+		checkMove();
+	}
 	makexmlfromBoard($board);
+/*
+*INIT A BOARD:
+*	- SET 0 STATE
+*	- RETURN NEW board[10][10]
+*/	
+	function initaBoard(){
+		for($i=1;$i<=10;$i++){
+			for($j=1;$j<=10;$j++){
+				$board[$i][$j]=0;
+			}
+		}
+		return $board;
+	}
 /*
 *INIT WHEN "newGame":
 *	- SET GAME	INIT STATE
@@ -38,28 +59,16 @@
 		return $board;
 	}
 /*
-*INIT A BOARD:
-*	- SET 0 STATE
-*	- RETURN NEW board[10][10]
-*/	
-	function initaBoard(){
-		for($i=1;$i<=10;$i++){
-			for($j=1;$j<=10;$j++){
-				$board[$i][$j]=0;
-			}
-		}
-		return $board;
-	}
-/*
 *PRINT BOARD
 */
 	function dspBoard($board){
-	$p=0;
+		$p=0;
 		for($i=1;$i<=10;$i++){
 			for($j=1;$j<=10;$j++){
 				echo $board[$i][$j];
 				$p++;
 			}
+			echo "<br/>";
 		}
 	}
 /*
@@ -77,12 +86,42 @@
 				$p++;
 				$val= $board[$i][$j];
 				$eCase=$doc->createElement('case', $val);
+				if($val==1){
+					$eMoves=$doc->createElement('posMoves');
+					$ePoss=$doc->createElement('cases', $p+11);
+					$eMoves->appendChild($ePoss);
+					$ePoss=$doc->createElement('cases', $p+9);
+					$eMoves->appendChild($ePoss);
+					$eCase->appendChild($eMoves);
+				}
+				if($val==2){
+					$eMoves=$doc->createElement('posMoves');
+					$ePoss=$doc->createElement('cases', $p-11);
+					$eMoves->appendChild($ePoss);
+					$ePoss=$doc->createElement('cases', $p-9);
+					$eMoves->appendChild($ePoss);
+					$eCase->appendChild($eMoves);	
+				}
 				$eCase->setAttribute('id', $p);
 				$eBoard->appendChild($eCase);
 			}
 		}
+		
+		
 		$doc->formatOutput = true;
 		echo $doc->saveXML();
+		$doc->save("board.xml");
 	}
-	?>
+
+/*
+*CHECK IF PAWN EATING
+*	-> FROM, TO
+*	-> RETURN NEW board[10][10]
+*/
+/*funtion checkMove($from, $dest){
+	$pwn=$board[$from];
+		if($dest==($pwn==1)? 2:1)
+			echo "Mangé";
+}*/
+?>
 		

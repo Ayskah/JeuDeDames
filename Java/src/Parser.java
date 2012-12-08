@@ -2,7 +2,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -26,7 +30,7 @@ public class Parser{
 	Board plat;
 	URL theFile;
 	ArrayList<Integer> pos;
-	
+	HashMap<Integer, ArrayList<Integer>> posandMoves;
 	/**
 	 * @param URL
 	 * Create a new parsed URL
@@ -47,32 +51,45 @@ public class Parser{
 				theFile = new URL(URL);
 				doc = sx.build(theFile);
 			}
-			catch (MalformedURLException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (JDOMException e) {
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 			racine = doc.getRootElement();
 			xpaF = XPathFactory.instance();
+			posandMoves = new HashMap<Integer, ArrayList<Integer>>();
 	}	
 	/**
 	 * Creates a new board from XML
 	 */
 	public void browseNodes(){
-		System.out.println("lol");
-		 	pos= new ArrayList<Integer>();
+			pos = new ArrayList<Integer>();
 			xpaE = xpaF.compile("board/case", Filters.element());
 			nodes = xpaE.evaluate(doc);
+			posandMoves.put(0, new ArrayList<Integer>());
 			pos.add(0);
 			for(Element e: nodes){
-				pos.add(Integer.parseInt(e.getValue()));
+				int val = Integer.parseInt(e.getText());
+				ArrayList<Integer> moves = new ArrayList<Integer>(browseMoves(pos.size()));
+				posandMoves.put(val, moves);
+				pos.add(val);
 			}
-	}		
+	}
 	/**
-	 * @param i
-	 * @return
+	 * @param int Position
+	 * @return : ArrayList<Integer> Possible moves
+	*/
+	public ArrayList<Integer> browseMoves(int id){	
+			ArrayList<Integer> moves = new ArrayList<Integer>();
+			xpaE = xpaF.compile("board/case["+id+"]//*//cases", Filters.element());
+			nodes = xpaE.evaluate(doc);
+			for(Element e: nodes){
+				moves.add(Integer.parseInt(e.getText()));
+			}
+	return moves;
+	}
+	/**
+	 * @param int Position
+	 * @return int Value pawn
 	 */
 	public Integer getVal(int i){
 		return pos.get(i);
